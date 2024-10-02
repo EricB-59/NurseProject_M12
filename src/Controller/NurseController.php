@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 class NurseController extends AbstractController {
+    // Información de todos los enfermeros registrados 
 
     // Validación de login de un enfermero
     #[Route('/nurse', name: 'app_nurse')]
@@ -33,6 +34,6 @@ class NurseController extends AbstractController {
         }
         return new Response("NO ES POST");
     }
-    
 
+    // Búsqueda de enfermeros por nombre
 }
