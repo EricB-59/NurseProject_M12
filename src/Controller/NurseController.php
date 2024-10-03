@@ -34,6 +34,16 @@ class NurseController extends AbstractController {
         }
         return new Response("NO ES POST");
     }
+    public function findByName(Request $peticionNurse): JsonResponse
+    {
+        $nameNurse = $peticionNurse ->query -> get('first_name');
+        $json_nurse = file_get_contents('DATA.json');
+        $json_data = json_decode($json_nurse, associative: true);
+        $filtrarNombre = array_filter($json_data, function($nurse) use ($nameNurse){
+            return strtolower($nurse['first_name']) === strtolower($nameNurse);
+        });
+        return new JsonResponse(array_values($filtrarNombre));
+    }
 
     // Búsqueda de enfermeros por nombre
 }
