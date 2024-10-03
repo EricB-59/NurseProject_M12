@@ -12,7 +12,7 @@ class NurseController extends AbstractController {
     // Información de todos los enfermeros registrados 
 
     // Validación de login de un enfermero
-    #[Route('/nurse', name: 'app_nurse')]
+    #[Route('/nurseLogin', name: 'app_nurse')]
     public function login(Request $request): Response {
         if ($request->isMethod('POST')) {
             $firstName = $request->request->get('first_name');
@@ -34,6 +34,9 @@ class NurseController extends AbstractController {
         }
         return new Response("NO ES POST");
     }
+
+    // Búsqueda de enfermeros por nombre    
+    #[Route('/nurseFindByName', name: 'app_nurse')]
     public function findByName(Request $peticionNurse): JsonResponse
     {
         $nameNurse = $peticionNurse ->query -> get('first_name');
@@ -45,5 +48,5 @@ class NurseController extends AbstractController {
         return new JsonResponse(array_values($filtrarNombre));
     }
 
-    // Búsqueda de enfermeros por nombre
+    
 }
