@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class NurseController extends AbstractController {
     // Información de todos los enfermeros registrados 
-    #[Route('/nurse', name: 'app_nurse_Info')]
+    #[Route('/nurseInfo', name: 'app_nurse_Info')]
     public function nurseInfo(): JsonResponse
     {
         $json_nurse = file_get_contents('DATA.json');
