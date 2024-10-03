@@ -10,8 +10,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class NurseController extends AbstractController {
     // Información de todos los enfermeros registrados 
-    #[Route('/nurse', name: 'app_nurse')]
-    public function index(): JsonResponse
+    #[Route('/nurse', name: 'app_nurse_Info')]
+    public function nurseInfo(): JsonResponse
     {
         $json_nurse = file_get_contents('DATA.json');
         $json_data = json_decode($json_nurse, true);
@@ -19,8 +19,8 @@ class NurseController extends AbstractController {
         return new JsonResponse($json_data);
     }
     // Validación de login de un enfermero
-    #[Route('/nurseLogin', name: 'app_nurse')]
-    public function login(Request $request): Response {
+    #[Route('/nurseLogin', name: 'app_nurse_Login')]
+    public function nurseLogin(Request $request): Response {
         if ($request->isMethod('POST')) {
             $firstName = $request->request->get('first_name');
             $password = $request->request->get('password');
@@ -43,8 +43,8 @@ class NurseController extends AbstractController {
     }
 
     // Búsqueda de enfermeros por nombre    
-    #[Route('/nurseFindByName', name: 'app_nurse')]
-    public function findByName(Request $peticionNurse): JsonResponse
+    #[Route('/nurseFindByName', name: 'app_nurse_FindByName')]
+    public function nurseFindByName(Request $peticionNurse): JsonResponse
     {
         $nameNurse = $peticionNurse ->query -> get('first_name');
         $json_nurse = file_get_contents('DATA.json');
