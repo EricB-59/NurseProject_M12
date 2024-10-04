@@ -21,7 +21,7 @@ class NurseController extends AbstractController {
     }
     // Validación de login de un enfermero 
     #[Route('/login', methods: ['POST'], name: 'app_nurse_login')]
-    public function nurseLogin(Request $request): Response {
+    public function nurseLogin(Request $request): JsonResponse {
         $firstName = $request->request->get('first_name');
         $password = $request->request->get('password');
 
