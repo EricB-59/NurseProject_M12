@@ -53,8 +53,13 @@ class NurseController extends AbstractController {
         $filtrarNombre = array_filter($json_data, function($nurse) use ($nameNurse){
             return strtolower($nurse['first_name']) === strtolower($nameNurse);
         });
-        return new JsonResponse(array_values($filtrarNombre));
-    }
+        if (!empty($filtrarNombre)) {
+            // Retornar los resultados y el código de estado 200
+            return new JsonResponse(array_values($filtrarNombre), JsonResponse::HTTP_OK);
+        } else {
+            // Si no se encuentra el nombre, retornar 404 con un mensaje
+            return new JsonResponse(['message' => 'El enfermero con ese nombre no existe.'], JsonResponse::HTTP_NOT_FOUND);
+        }    }
 
     
 }
