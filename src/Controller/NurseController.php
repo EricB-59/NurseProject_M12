@@ -19,28 +19,25 @@ class NurseController extends AbstractController {
         // Retorna los datos como una respuesta JSON
         return new JsonResponse($json_data);
     }
-    // Validación de login de un enfermero
-    #[Route('/Login', name: 'app_nurse_Login')]
+    // Validación de login de un enfermero 
+    #[Route('/Login', methods: ['POST'], name: 'app_nurse_Login')]
     public function nurseLogin(Request $request): Response {
-        if ($request->isMethod('POST')) {
-            $firstName = $request->request->get('first_name');
-            $password = $request->request->get('password');
+        $firstName = $request->request->get('first_name');
+        $password = $request->request->get('password');
 
-            $json_data = file_get_contents('DATA.json');
-            $data_array = json_decode($json_data, true);
+        $json_data = file_get_contents('DATA.json');
+        $data_array = json_decode($json_data, true);
  
-            for ($i = 0; $i < count($data_array); $i++) {
-                foreach ($data_array[$i] as $desc => $value) {
-                    if ($desc == "first_name" && $value == $firstName) {
-                        if ($data_array[$i]["password"] == $password) {
-                            return new Response(true);
-                        }
+        for ($i = 0; $i < count($data_array); $i++) {
+            foreach ($data_array[$i] as $desc => $value) {
+                if ($desc == "first_name" && $value == $firstName) {
+                    if ($data_array[$i]["password"] == $password) {
+                        return new Response(true);
                     }
                 }
             }
-            return new Response(false);
         }
-        return new Response("NO ES POST");
+        return new Response(false);
     }
 
     // Búsqueda de enfermeros por nombre    
