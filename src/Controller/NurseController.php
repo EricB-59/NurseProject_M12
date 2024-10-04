@@ -11,8 +11,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/nurse', name: 'app_nurse')]
 class NurseController extends AbstractController {
     // Información de todos los enfermeros registrados 
-    #[Route('/Info', name: 'app_nurse_Info')]
-    public function nurseInfo(): JsonResponse
+    #[Route('/getAll', name: 'app_nurse_getAll')]
+    public function getAll(): JsonResponse
     {
         $json_nurse = file_get_contents('DATA.json');
         $json_data = json_decode($json_nurse, true);
@@ -20,7 +20,7 @@ class NurseController extends AbstractController {
         return new JsonResponse($json_data);
     }
     // Validación de login de un enfermero 
-    #[Route('/Login', methods: ['POST'], name: 'app_nurse_Login')]
+    #[Route('/login', methods: ['POST'], name: 'app_nurse_login')]
     public function nurseLogin(Request $request): Response {
         $firstName = $request->request->get('first_name');
         $password = $request->request->get('password');
@@ -32,17 +32,17 @@ class NurseController extends AbstractController {
             foreach ($data_array[$i] as $desc => $value) {
                 if ($desc == "first_name" && $value == $firstName) {
                     if ($data_array[$i]["password"] == $password) {
-                        return new Response(true);
+                        return $this->json(true, $status = 200);
                     }
                 }
             }
         }
-        return new Response(false);
+        return $this->json(false, $status = 400);
     }
 
     // Búsqueda de enfermeros por nombre    
-    #[Route('/FindByName', name: 'app_nurse_FindByName')]
-    public function nurseFindByName(Request $peticionNurse): JsonResponse
+    #[Route('/findName', name: 'app_nurse_findName')]
+    public function findName(Request $peticionNurse): JsonResponse
     {
         $nameNurse = $peticionNurse ->query -> get('first_name');
         $json_nurse = file_get_contents('DATA.json');
