@@ -1,4 +1,16 @@
 {
+    "php-cs-fixer/shim": {
+        "version": "3.64",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "3.0",
+            "ref": "16422bf8eac6c3be42afe07d37e2abc89d2bdf6b"
+        },
+        "files": [
+            ".php-cs-fixer.dist.php"
+        ]
+    },
     "symfony/console": {
         "version": "7.1",
         "recipe": {
@@ -20,7 +32,11 @@
             "ref": "5aa8aa48234c8eb6dbdd7b3cd5d791485d2cec4b"
         },
         "files": [
+<<<<<<< HEAD
             "./config/packages/debug.yaml"
+=======
+            "config/packages/debug.yaml"
+>>>>>>> 43fec9e1c51a394bab405a120dd493b17151bbb9
         ]
     },
     "symfony/flex": {
@@ -72,7 +88,11 @@
             "ref": "aff23899c4440dd995907613c1dd709b6f59503f"
         },
         "files": [
+<<<<<<< HEAD
             "./config/packages/monolog.yaml"
+=======
+            "config/packages/monolog.yaml"
+>>>>>>> 43fec9e1c51a394bab405a120dd493b17151bbb9
         ]
     },
     "symfony/routing": {
@@ -97,8 +117,13 @@
             "ref": "cab5fd2a13a45c266d45a7d9337e28dee6272877"
         },
         "files": [
+<<<<<<< HEAD
             "./config/packages/twig.yaml",
             "./templates/base.html.twig"
+=======
+            "config/packages/twig.yaml",
+            "templates/base.html.twig"
+>>>>>>> 43fec9e1c51a394bab405a120dd493b17151bbb9
         ]
     },
     "symfony/web-profiler-bundle": {
@@ -110,8 +135,13 @@
             "ref": "e42b3f0177df239add25373083a564e5ead4e13a"
         },
         "files": [
+<<<<<<< HEAD
             "./config/packages/web_profiler.yaml",
             "./config/routes/web_profiler.yaml"
+=======
+            "config/packages/web_profiler.yaml",
+            "config/routes/web_profiler.yaml"
+>>>>>>> 43fec9e1c51a394bab405a120dd493b17151bbb9
         ]
     }
 }
