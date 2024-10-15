@@ -17,11 +17,6 @@ class NurseController extends AbstractController
     {
         $json_nurse = file_get_contents('DATA.json');
         $json_data = json_decode($json_nurse, true);
-<<<<<<< HEAD
-        dd($json_data);
-=======
-
->>>>>>> 43fec9e1c51a394bab405a120dd493b17151bbb9
         // Retorna los datos como una respuesta JSON
         return new JsonResponse($json_data, Response::HTTP_OK);
     }

@@ -4,11 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
-    "content-hash": "cffb5124f93b869c7db9057853bab250",
-=======
     "content-hash": "c6537dbd0a16bbe5fca1aa271b3763b0",
->>>>>>> 43fec9e1c51a394bab405a120dd493b17151bbb9
     "packages": [
         {
             "name": "monolog/monolog",
@@ -112,8 +108,6 @@
             "time": "2024-06-28T09:40:51+00:00"
         },
         {
-<<<<<<< HEAD
-=======
             "name": "php-cs-fixer/shim",
             "version": "v3.64.0",
             "source": {
@@ -166,7 +160,6 @@
             "time": "2024-08-30T23:10:11+00:00"
         },
         {
->>>>>>> 43fec9e1c51a394bab405a120dd493b17151bbb9
             "name": "psr/cache",
             "version": "3.0.0",
             "source": {
