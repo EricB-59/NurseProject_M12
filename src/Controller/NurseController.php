@@ -52,10 +52,17 @@ class NurseController extends AbstractController
         $nameNurse = $peticionNurse->query->get('first_name');
        $nurseRepository = $entityManager->getRepository(Nurses::class);
         $nurses = $nurseRepository->findBy(['first_name'=> $nameNurse]);
-
+        $nurseArray = [];
         if (!empty($nurses)) {
-            // Retornar los resultados y el código de estado 200
-            return new JsonResponse($nurses, Response::HTTP_OK);
+          foreach ($nurses as $nurse) {
+            $nurseArray[] = [
+                'id'=>$nurse->getId(),
+                'first_name'=>$nurse->getFirstName(),
+                'last_name'=>$nurse->getLastName(),
+                'email' => $nurse->getEmail(),
+            ];
+            return new JsonResponse($nurseArray, Response::HTTP_OK);
+          }
         } else {
             // Si no se encuentra el nombre, retornar 404 con un mensaje
             return new JsonResponse(['message' => 'El enfermero con ese nombre no existe.'], Response::HTTP_NOT_FOUND);
