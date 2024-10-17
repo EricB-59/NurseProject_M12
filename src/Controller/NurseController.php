@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Nurses;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,17 +47,15 @@ class NurseController extends AbstractController
 
     // Búsqueda de enfermeros por nombre
     #[Route('/findName', name: 'app_nurse_findName')]
-    public function findName(Request $peticionNurse): JsonResponse
+    public function findName(Request $peticionNurse, EntityManagerInterface $entityManager): JsonResponse
     {
         $nameNurse = $peticionNurse->query->get('first_name');
-        $json_nurse = file_get_contents('DATA.json');
-        $json_data = json_decode($json_nurse, associative: true);
-        $filtrarNombre = array_filter($json_data, function ($nurse) use ($nameNurse) {
-            return strtolower($nurse['first_name']) === strtolower($nameNurse);
-        });
-        if (!empty($filtrarNombre)) {
+       $nurseRepository = $entityManager->getRepository(Nurses::class);
+        $nurses = $nurseRepository->findBy(['first_name'=> $nameNurse]);
+
+        if (!empty($nurses)) {
             // Retornar los resultados y el código de estado 200
-            return new JsonResponse(array_values($filtrarNombre), Response::HTTP_OK);
+            return new JsonResponse($nurses, Response::HTTP_OK);
         } else {
             // Si no se encuentra el nombre, retornar 404 con un mensaje
             return new JsonResponse(['message' => 'El enfermero con ese nombre no existe.'], Response::HTTP_NOT_FOUND);
