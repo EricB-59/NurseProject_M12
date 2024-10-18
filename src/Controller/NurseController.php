@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Controller;
+use App\Entity\Nurses;
+use App\Repository\NursesRepository;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,7 +19,6 @@ class NurseController extends AbstractController
     #[Route('/getAll', name: 'app_nurse_getAll')]
     public function getAll(EntityManagerInterface $entityManagerInterface): JsonResponse
     {
-        
         $nursesRepository = $entityManagerInterface->getRepository(Nurses::class);
         $nurses = $nursesRepository->findAll();
 
@@ -29,46 +31,49 @@ class NurseController extends AbstractController
                 'password' => $nurse->getPassword(),
             ];
         }
-
         // Retorna los datos como una respuesta JSON
         return new JsonResponse($nursesArray, Response::HTTP_OK);
     }
 
     // Validación de login de un enfermero
     #[Route('/login', methods: ['POST'], name: 'app_nurse_login')]
-    public function nurseLogin(Request $request): JsonResponse
+    public function nurseLogin(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
+        $nurses_repo = $entityManager->getRepository(Nurses::class);
+        $nurses = $nurses_repo->findAll();
+        
         $firstName = $request->request->get('first_name');
         $password = $request->request->get('password');
 
-        $json_data = file_get_contents('DATA.json');
-        $data_array = json_decode($json_data, true);
-
-        for ($i = 0; $i < count($data_array); ++$i) {
-            foreach ($data_array[$i] as $desc => $value) {
-                if ('first_name' == $desc && $value == $firstName) {
-                    if ($data_array[$i]['password'] == $password) {
-                        return $this->json(true, Response::HTTP_OK);
-                    }
+        foreach ($nurses as $nurse) {
+            if  ($nurse->getFirstName() === $firstName) {
+                if($nurse->getPassword() === $password) {
+                    return $this->json(true, Response::HTTP_OK);
                 }
             }
+            
         }
         return $this->json(false, Response::HTTP_NOT_FOUND);
     }
 
     // Búsqueda de enfermeros por nombre
     #[Route('/findName', name: 'app_nurse_findName')]
-    public function findName(Request $peticionNurse): JsonResponse
+    public function findName(Request $peticionNurse, EntityManagerInterface $entityManager): JsonResponse
     {
         $nameNurse = $peticionNurse->query->get('first_name');
-        $json_nurse = file_get_contents('DATA.json');
-        $json_data = json_decode($json_nurse, associative: true);
-        $filtrarNombre = array_filter($json_data, function ($nurse) use ($nameNurse) {
-            return strtolower($nurse['first_name']) === strtolower($nameNurse);
-        });
-        if (!empty($filtrarNombre)) {
-            // Retornar los resultados y el código de estado 200
-            return new JsonResponse(array_values($filtrarNombre), Response::HTTP_OK);
+        $nurseRepository = $entityManager->getRepository(Nurses::class);
+        $nurses = $nurseRepository->findBy(['first_name'=> $nameNurse]);
+        $nurseArray = [];
+        if (!empty($nurses)) {
+          foreach ($nurses as $nurse) {
+            $nurseArray[] = [
+                'id'=>$nurse->getId(),
+                'first_name'=>$nurse->getFirstName(),
+                'last_name'=>$nurse->getLastName(),
+                'email' => $nurse->getEmail(),
+            ];
+            return new JsonResponse($nurseArray, Response::HTTP_OK);
+          }
         } else {
             // Si no se encuentra el nombre, retornar 404 con un mensaje
             return new JsonResponse(['message' => 'El enfermero con ese nombre no existe.'], Response::HTTP_NOT_FOUND);
