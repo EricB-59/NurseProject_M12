@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Nurses;
 use App\Repository\NursesRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,9 +30,9 @@ class NurseController extends AbstractController
     public function nurseLogin(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
 
-        $nurses_repo = $entityManager->getRepository(NursesRepository::class);
+        $nurses_repo = $entityManager->getRepository(Nurses::class);
         $nurses = $nurses_repo->findAll();
-
+        
         $firstName = $request->request->get('first_name');
         $password = $request->request->get('password');
 
