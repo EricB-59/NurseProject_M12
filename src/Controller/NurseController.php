@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Controller;
-
 use App\Entity\Nurses;
 use App\Repository\NursesRepository;
 use Doctrine\ORM\EntityManager;
@@ -11,18 +10,29 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Entity\Nurses;
 
 #[Route('/nurse', name: 'app_nurse')]
 class NurseController extends AbstractController
 {
     // Información de todos los enfermeros registrados
     #[Route('/getAll', name: 'app_nurse_getAll')]
-    public function getAll(): JsonResponse
+    public function getAll(EntityManagerInterface $entityManagerInterface): JsonResponse
     {
-        $json_nurse = file_get_contents('DATA.json');
-        $json_data = json_decode($json_nurse, true);
+        $nursesRepository = $entityManagerInterface->getRepository(Nurses::class);
+        $nurses = $nursesRepository->findAll();
+
+        $nursesArray = [];
+        foreach ($nurses as $nurse) {
+            $nursesArray[] = [
+                'first_name' => $nurse->getFirstName(),
+                'last_name' => $nurse->getLastName(),
+                'email' => $nurse->getEmail(),
+                'password' => $nurse->getPassword(),
+            ];
+        }
         // Retorna los datos como una respuesta JSON
-        return new JsonResponse($json_data, Response::HTTP_OK);
+        return new JsonResponse($nursesArray, Response::HTTP_OK);
     }
 
     // Validación de login de un enfermero
