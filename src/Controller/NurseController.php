@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Nurses;
+use App\Repository\NursesRepository;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,22 +27,21 @@ class NurseController extends AbstractController
 
     // Validación de login de un enfermero
     #[Route('/login', methods: ['POST'], name: 'app_nurse_login')]
-    public function nurseLogin(Request $request): JsonResponse
+    public function nurseLogin(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
+        $nurses_repo = $entityManager->getRepository(Nurses::class);
+        $nurses = $nurses_repo->findAll();
+        
         $firstName = $request->request->get('first_name');
         $password = $request->request->get('password');
 
-        $json_data = file_get_contents('DATA.json');
-        $data_array = json_decode($json_data, true);
-
-        for ($i = 0; $i < count($data_array); ++$i) {
-            foreach ($data_array[$i] as $desc => $value) {
-                if ('first_name' == $desc && $value == $firstName) {
-                    if ($data_array[$i]['password'] == $password) {
-                        return $this->json(true, Response::HTTP_OK);
-                    }
+        foreach ($nurses as $nurse) {
+            if  ($nurse->getFirstName() === $firstName) {
+                if($nurse->getPassword() === $password) {
+                    return $this->json(true, Response::HTTP_OK);
                 }
             }
+            
         }
         return $this->json(false, Response::HTTP_NOT_FOUND);
     }
@@ -50,7 +51,7 @@ class NurseController extends AbstractController
     public function findName(Request $peticionNurse, EntityManagerInterface $entityManager): JsonResponse
     {
         $nameNurse = $peticionNurse->query->get('first_name');
-       $nurseRepository = $entityManager->getRepository(Nurses::class);
+        $nurseRepository = $entityManager->getRepository(Nurses::class);
         $nurses = $nurseRepository->findBy(['first_name'=> $nameNurse]);
         $nurseArray = [];
         if (!empty($nurses)) {
