@@ -38,21 +38,21 @@ class NurseController extends AbstractController
     #[Route('/login', methods: ['POST'], name: 'app_nurse_login')]
     public function nurseLogin(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        $nurses_repo = $entityManager->getRepository(Nurses::class);
-        $nurses = $nurses_repo->findAll();
-
         $firstName = $request->request->get('first_name');
         $password = $request->request->get('password');
 
-        foreach ($nurses as $nurse) {
-            if ($nurse->getFirstName() === $firstName) {
-                if ($nurse->getPassword() === $password) {
-                    return $this->json(true, Response::HTTP_OK);
-                }
+        $nurses_repo = $entityManager->getRepository(Nurses::class);
+        $nurses = $nurses_repo->findOneBy(array('first_name' => $firstName));
+
+        if ($nurses == null) {
+            return $this->json(false, Response::HTTP_NOT_FOUND);
+        } else{
+            if ($nurses->getPassword() === $password) {
+                return $this->json(true, Response::HTTP_OK);
+            } else{
+                return $this->json(false, Response::HTTP_NOT_FOUND);
             }
         }
-
-        return $this->json(false, Response::HTTP_NOT_FOUND);
     }
 
     // Búsqueda de enfermeros por nombre
@@ -62,6 +62,7 @@ class NurseController extends AbstractController
         $nameNurse = $peticionNurse->query->get('first_name');
         $nurseRepository = $entityManager->getRepository(Nurses::class);
         $nurses = $nurseRepository->findBy(['first_name' => $nameNurse]);
+
         $nurseArray = [];
         if (!empty($nurses)) {
             foreach ($nurses as $nurse) {
