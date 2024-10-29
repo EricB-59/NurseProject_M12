@@ -13,6 +13,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/nurse', name: 'app_nurse')]
 class NurseController extends AbstractController
 {
+// CREATE
+  
+// READ
+  
     // Información de todos los enfermeros registrados
     #[Route('/getAll', name: 'app_nurse_getAll')]
     public function getAll(EntityManagerInterface $entityManagerInterface): JsonResponse
@@ -80,29 +84,57 @@ class NurseController extends AbstractController
         // Si no se encuentra el nombre, retornar 404 con un mensaje
         return new JsonResponse(['message' => 'El enfermero con ese nombre no existe.'], Response::HTTP_NOT_FOUND);
     }
+    
+    
+    #[Route('/findByID', name: 'app_nurse_findID')]
+    public function findByID(Request $peticionNurse, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $nameNurse = $peticionNurse->query->get('id');
+        $nurseRepository = $entityManager->getRepository(Nurses::class);
+        $nurses = $nurseRepository->findBy(['id' => $nameNurse]);
 
-#[Route('/findByID', name: 'app_nurse_findID')]
-public function findByID(Request $peticionNurse, EntityManagerInterface $entityManager): JsonResponse
-{
-    $nameNurse = $peticionNurse->query->get('id');
-    $nurseRepository = $entityManager->getRepository(Nurses::class);
-    $nurses = $nurseRepository->findBy(['id' => $nameNurse]);
+        $nurseArray = [];
+        if (!empty($nurses)) {
+            foreach ($nurses as $nurse) {
+                $nurseArray[] = [
+                    'id' => $nurse->getId(),
+                    'first_name' => $nurse->getFirstName(),
+                    'last_name' => $nurse->getLastName(),
+                    'email' => $nurse->getEmail(),
+                ];
 
-    $nurseArray = [];
-    if (!empty($nurses)) {
-        foreach ($nurses as $nurse) {
-            $nurseArray[] = [
-                'id' => $nurse->getId(),
-                'first_name' => $nurse->getFirstName(),
-                'last_name' => $nurse->getLastName(),
-                'email' => $nurse->getEmail(),
-            ];
-
-            return new JsonResponse($nurseArray, Response::HTTP_OK);
+                return new JsonResponse($nurseArray, Response::HTTP_OK);
+            }
         }
+
+        // Si no se encuentra el nombre, retornar 404 con un mensaje
+        return new JsonResponse(Response::HTTP_NOT_FOUND);
     }
 
-    // Si no se encuentra el nombre, retornar 404 con un mensaje
-    return new JsonResponse(Response::HTTP_NOT_FOUND);
-}
+// UPDATE
+
+  
+// DELETE
+  
+    // Delete by ID
+    #[Route('/deleteById', name: 'app_nurse_deleteById', methods: ['DELETE'])]
+    public function deleteById(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {   
+        // Front-End Input
+        $idNurse = $request->query->get('id_nurse');
+
+        // Acces to database
+        $nurseRepository = $entityManager->getRepository(Nurses::class);
+        $nurses = $nurseRepository->findOneBy(['id' => $idNurse]);
+
+        if ($nurses != null) {
+            $entityManager->remove($nurses);
+            $entityManager->flush();
+
+            return new JsonResponse(Response::HTTP_OK);
+        } else {
+
+            return new JsonResponse(Response::HTTP_NOT_FOUND);
+        }
+    }
 }
