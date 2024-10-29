@@ -80,4 +80,26 @@ class NurseController extends AbstractController
         // Si no se encuentra el nombre, retornar 404 con un mensaje
         return new JsonResponse(['message' => 'El enfermero con ese nombre no existe.'], Response::HTTP_NOT_FOUND);
     }
+
+    // Delete by ID
+    #[Route('/deleteById', name: 'app_nurse_deleteById', methods: ['DELETE'])]
+    public function deleteById(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {   
+        // Front-End Input
+        $idNurse = $request->query->get('id_nurse');
+
+        // Acces to database
+        $nurseRepository = $entityManager->getRepository(Nurses::class);
+        $nurses = $nurseRepository->findOneBy(['id' => $idNurse]);
+
+        if ($nurses != null) {
+            $entityManager->remove($nurses);
+            $entityManager->flush();
+
+            return new JsonResponse(Response::HTTP_OK);
+        } else {
+
+            return new JsonResponse(Response::HTTP_NOT_FOUND);
+        }
+    }
 }
