@@ -80,4 +80,29 @@ class NurseController extends AbstractController
         // Si no se encuentra el nombre, retornar 404 con un mensaje
         return new JsonResponse(['message' => 'El enfermero con ese nombre no existe.'], Response::HTTP_NOT_FOUND);
     }
+
+#[Route('/findByID', name: 'app_nurse_findID')]
+public function findByID(Request $peticionNurse, EntityManagerInterface $entityManager): JsonResponse
+{
+    $nameNurse = $peticionNurse->query->get('id');
+    $nurseRepository = $entityManager->getRepository(Nurses::class);
+    $nurses = $nurseRepository->findBy(['id' => $nameNurse]);
+
+    $nurseArray = [];
+    if (!empty($nurses)) {
+        foreach ($nurses as $nurse) {
+            $nurseArray[] = [
+                'id' => $nurse->getId(),
+                'first_name' => $nurse->getFirstName(),
+                'last_name' => $nurse->getLastName(),
+                'email' => $nurse->getEmail(),
+            ];
+
+            return new JsonResponse($nurseArray, Response::HTTP_OK);
+        }
+    }
+
+    // Si no se encuentra el nombre, retornar 404 con un mensaje
+    return new JsonResponse(Response::HTTP_NOT_FOUND);
+}
 }
