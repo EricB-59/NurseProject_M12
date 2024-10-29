@@ -14,9 +14,45 @@ use Symfony\Component\Routing\Attribute\Route;
 class NurseController extends AbstractController
 {
 // CREATE
+    //Create nurse with the next attributes: first_name, last_name, email and password
+    #[Route('/create', methods: ['POST'], name: 'app_nurse_create')]
+    public function createNurse(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        //Enviamos los atributos del Nurse con postMan haciendo la función que haría el front-end con sus inputs
+        $firstName = $request->request->get('first_name');
+        $lastName = $request->request->get('last_name');
+        $email = $request->request->get('email');
+        $password = $request->request->get('password');
+
+
+        // Validamos que se envien todos los campos requeridos
+        if (empty($firstName) || empty($lastName) || empty($email) || empty($password)) {
+            return new JsonResponse(Response::HTTP_BAD_REQUEST);
+        }
+
+        //Verificamos dentro de la base de datos que el email no este utilizado por otro emfermero
+        $emailRepetido = $entityManager->getRepository(Nurses::class)->findBy(['email' => $email]);
+        if ($emailRepetido) {
+            return new JsonResponse( Response:: HTTP_BAD_REQUEST);
+        }
+
+        $nurse = new Nurses();
+        //Creamos el nurse y lo controlamos como un objecto nurse que va a guardar todos los datos
+        $nurse->setFirstName($firstName);
+        $nurse->setLastName($lastName);
+        $nurse->setEmail($email);
+        $nurse->setPassword($password);
+
+        
+        $entityManager->persist($nurse); 
+        /*El metodo persist es como un create en MySQL, cuando llamas a persist($entity), le indicas a Doctrine que esta entidad debe ser gestionada y 
+        que sus cambios deben ser guardados en la base de datos en la siguiente operación de "flush" */
+        $entityManager->flush();
+
+        return new JsonResponse(data: Response::HTTP_CREATED);
+    }
   
 // READ
-  
     // Información de todos los enfermeros registrados
     #[Route('/getAll', name: 'app_nurse_getAll')]
     public function getAll(EntityManagerInterface $entityManagerInterface): JsonResponse
@@ -85,7 +121,6 @@ class NurseController extends AbstractController
         return new JsonResponse(['message' => 'El enfermero con ese nombre no existe.'], Response::HTTP_NOT_FOUND);
     }
     
-    
     #[Route('/findByID', name: 'app_nurse_findID')]
     public function findByID(Request $peticionNurse, EntityManagerInterface $entityManager): JsonResponse
     {
@@ -115,7 +150,6 @@ class NurseController extends AbstractController
 
   
 // DELETE
-  
     // Delete by ID
     #[Route('/deleteById', name: 'app_nurse_deleteById', methods: ['DELETE'])]
     public function deleteById(Request $request, EntityManagerInterface $entityManager): JsonResponse
