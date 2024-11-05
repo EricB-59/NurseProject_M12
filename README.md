@@ -1,4 +1,4 @@
-# Nurse Project  
+# Nurse Project  :chart_with_upwards_trend:
 #####  Participants:
 - Eric Baena Canto
 - Guillem Sánchez Oliveras
