@@ -99,7 +99,7 @@ class NurseController extends AbstractController
     #[Route('/findName', name: 'app_nurse_findName')]
     public function findName(Request $peticionNurse, EntityManagerInterface $entityManager): JsonResponse
     {
-        $nameNurse = $peticionNurse->query->get('first_name');
+        $nameNurse = $peticionNurse->query->get(key: 'first_name');
         $nurseRepository = $entityManager->getRepository(Nurses::class);
         $nurses = $nurseRepository->findBy(['first_name' => $nameNurse]);
 
@@ -147,7 +147,35 @@ class NurseController extends AbstractController
     }
 
 // UPDATE
+    //Modificación de enfermeros.
+    #[Route('/updateById', methods: ['PUT'], name: 'app_nurse_update')]
+    public function updateByName(Request $peticionId, EntityManagerInterface $entityManager): JsonResponse //Request obtiene la información de la petición,
+    {
+        $nurseById = $peticionId->query->get(key: 'id'); //Obtengo el id pasado por la URL del ID (STRING).
+        $nurseByFirstName = $peticionId->query->get(key: 'first_name'); //Obtengo el first_name pasado por la URL del ID (STRING).
+        $nurseByLastName = $peticionId->query->get(key: 'last_name');
+        $nurseByEmail = $peticionId->query->get(key: 'email');
+        $nurseByPassword = $peticionId->query->get(key: 'password'); 
+        //Obtengo un objecto de todos los datos buscándolo por el ID.
+        $nurseRepository = $entityManager->getRepository(Nurses::class)->find(['id' => $nurseById]); 
+        
+        if ($nurseRepository == null) { //Si no existe el objeto
+            return new JsonResponse(Response::HTTP_NOT_FOUND);
+        }else {
+            if (!empty($nurseByFirstName) || !empty($nurseByLastName) || !empty($nurseByEmail) || !empty($nurseByPassword)){ //Veo que todos los datos sean pasados
+                $nurseRepository->setFirstName($nurseByFirstName); //Cambio cada uno de los datos mediante el set.
+                $nurseRepository->setLastName($nurseByLastName);
+                $nurseRepository->setEmail($nurseByEmail);
+                $nurseRepository->setPassword($nurseByPassword);
 
+                $entityManager->flush(); //Hago los cambios en la base de datos.
+                
+                return new JsonResponse(Response::HTTP_OK); //Muestro si hay o no error.
+            }else {
+                return new JsonResponse(Response::HTTP_BAD_REQUEST);
+            }
+        }
+    }
   
 // DELETE
     // Delete by ID
