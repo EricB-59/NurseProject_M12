@@ -32,7 +32,7 @@ class NurseController extends AbstractController
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)){ //Verificación del formato correcto del Email.
                 return new JsonResponse(Response::HTTP_BAD_REQUEST);
             }
-
+        }
         //We verify within the database that the email is not used by another nurse
         $repeatedEmail = $entityManager->getRepository(Nurses::class)->findBy(['email' => $email]);
         if ($repeatedEmail) {
@@ -161,6 +161,7 @@ class NurseController extends AbstractController
         $nurseByPassword = $requestId->query->get(key: 'password'); 
         //I get an object from all the data by searching for it by ID.
         $nurseRepository = $entityManager->getRepository(Nurses::class)->find(['id' => $nurseById]); 
+        //El repositorio(get repository) crea un objeto u objetos de la busqueda que devuelve la base de datos, se almacenan ahí.
         
         if ($nurseRepository == null) { //If the object does not exist
             return new JsonResponse(Response::HTTP_NOT_FOUND);
