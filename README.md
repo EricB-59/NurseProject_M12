@@ -74,3 +74,25 @@ Open the browser and search `http://localhost:8000`
 ***Additional comands***
 - Execute migrations: `php bin/console doctrine:migrations:migrate`
 - Install assets: `php bin/console assets:install`
+
+<br>
+
+## API examples
+### :ambulance: C R U D :ambulance:
+To execute the following API's we are going to use PostMan to send the requests.
+
+- **Create**<br>
+
+![67e0b710-8bdd-440a-8273-de7f377e035c](https://github.com/user-attachments/assets/15d16f2d-e43a-400d-83e5-f916da657ccd)
+
+- **Read**<br>
+
+![1d31da71-0f44-47d0-87ea-0e2182a4f82c](https://github.com/user-attachments/assets/681310e5-1f40-4a74-8e26-bce42e4fbae2)
+
+- **Update**<br>
+
+![2e0c96f0-5cbc-4810-8241-63951539fdd9](https://github.com/user-attachments/assets/8a5761d1-2cc6-4750-83c7-2727e1077fcf)
+
+- **Delete**<br>
+
+![d7c4853d-a074-42c4-848b-ae15abc9551e](https://github.com/user-attachments/assets/2d7b29f3-1292-4947-9980-9e9d96459a1b)
