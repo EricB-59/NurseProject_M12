@@ -33,7 +33,7 @@ class NurseController extends AbstractController
         //Verificamos dentro de la base de datos que el email no este utilizado por otro emfermero
         $emailRepetido = $entityManager->getRepository(Nurses::class)->findBy(['email' => $email]);
         if ($emailRepetido) {
-            return new JsonResponse( Response:: HTTP_BAD_REQUEST);
+            return new JsonResponse(Response:: HTTP_BAD_REQUEST);
         }
 
         $nurse = new Nurses();
