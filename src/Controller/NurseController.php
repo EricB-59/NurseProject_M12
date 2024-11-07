@@ -28,28 +28,32 @@ class NurseController extends AbstractController
         // Validamos que se envien todos los campos requeridos
         if (empty($firstName) || empty($lastName) || empty($email) || empty($password)) {
             return new JsonResponse(Response::HTTP_BAD_REQUEST);
+        }else {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)){ //Verificación del formato correcto del Email.
+                return new JsonResponse(Response::HTTP_BAD_REQUEST);
+            }
+
+            //Verificamos dentro de la base de datos que el email no este utilizado por otro emfermero
+            $emailRepetido = $entityManager->getRepository(Nurses::class)->findBy(['email' => $email]);
+            if ($emailRepetido) {
+                return new JsonResponse( Response:: HTTP_BAD_REQUEST);
+            }
+    
+            $nurse = new Nurses();
+            //Creamos el nurse y lo controlamos como un objecto nurse que va a guardar todos los datos
+            $nurse->setFirstName($firstName);
+            $nurse->setLastName($lastName);
+            $nurse->setEmail($email);
+            $nurse->setPassword($password);
+    
+            
+            $entityManager->persist($nurse); 
+            /*El metodo persist es como un create en MySQL, cuando llamas a persist($entity), le indicas a Doctrine que esta entidad debe ser gestionada y 
+            que sus cambios deben ser guardados en la base de datos en la siguiente operación de "flush" */
+            $entityManager->flush();
+    
+            return new JsonResponse(data: Response::HTTP_CREATED);
         }
-
-        //Verificamos dentro de la base de datos que el email no este utilizado por otro emfermero
-        $emailRepetido = $entityManager->getRepository(Nurses::class)->findBy(['email' => $email]);
-        if ($emailRepetido) {
-            return new JsonResponse( Response:: HTTP_BAD_REQUEST);
-        }
-
-        $nurse = new Nurses();
-        //Creamos el nurse y lo controlamos como un objecto nurse que va a guardar todos los datos
-        $nurse->setFirstName($firstName);
-        $nurse->setLastName($lastName);
-        $nurse->setEmail($email);
-        $nurse->setPassword($password);
-
-        
-        $entityManager->persist($nurse); 
-        /*El metodo persist es como un create en MySQL, cuando llamas a persist($entity), le indicas a Doctrine que esta entidad debe ser gestionada y 
-        que sus cambios deben ser guardados en la base de datos en la siguiente operación de "flush" */
-        $entityManager->flush();
-
-        return new JsonResponse(data: Response::HTTP_CREATED);
     }
   
 // READ
@@ -161,8 +165,11 @@ class NurseController extends AbstractController
         
         if ($nurseRepository == null) { //Si no existe el objeto
             return new JsonResponse(Response::HTTP_NOT_FOUND);
-        }else {
+        } else {
             if (!empty($nurseByFirstName) || !empty($nurseByLastName) || !empty($nurseByEmail) || !empty($nurseByPassword)){ //Veo que todos los datos sean pasados
+                if (!filter_var($nurseByEmail, FILTER_VALIDATE_EMAIL)){
+                    return new JsonResponse(Response::HTTP_BAD_REQUEST);
+                }
                 $nurseRepository->setFirstName($nurseByFirstName); //Cambio cada uno de los datos mediante el set.
                 $nurseRepository->setLastName($nurseByLastName);
                 $nurseRepository->setEmail($nurseByEmail);
