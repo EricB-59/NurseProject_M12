@@ -96,7 +96,7 @@ class NurseController extends AbstractController
     }
 
     // Búsqueda de enfermeros por nombre
-    #[Route('/findName', name: 'app_nurse_findName')]
+    #[Route('/findName', methods: ['GET'], name: 'app_nurse_findName')]
     public function findName(Request $peticionNurse, EntityManagerInterface $entityManager): JsonResponse
     {
         $nameNurse = $peticionNurse->query->get(key: 'first_name');
