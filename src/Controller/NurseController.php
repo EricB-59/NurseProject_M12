@@ -66,6 +66,7 @@ class NurseController extends AbstractController
         $nursesArray = [];
         foreach ($nurses as $nurse) {
             $nursesArray[] = [
+                'id' => $nurse->getId(),
                 'first_name' => $nurse->getFirstName(),
                 'last_name' => $nurse->getLastName(),
                 'email' => $nurse->getEmail(),
