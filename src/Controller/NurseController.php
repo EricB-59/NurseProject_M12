@@ -121,7 +121,7 @@ class NurseController extends AbstractController
         return new JsonResponse(['message' => 'El enfermero con ese nombre no existe.'], Response::HTTP_NOT_FOUND);
     }
     
-    #[Route('/findByID', name: 'app_nurse_findID')]
+    #[Route('/findByID', methods: ['GET'], name: 'app_nurse_findID')]
     public function findByID(Request $peticionNurse, EntityManagerInterface $entityManager): JsonResponse
     {
         $nameNurse = $peticionNurse->query->get('id');
