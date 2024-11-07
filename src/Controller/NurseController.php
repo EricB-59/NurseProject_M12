@@ -28,7 +28,10 @@ class NurseController extends AbstractController
         // We validate that all required fields are sent
         if (empty($firstName) || empty($lastName) || empty($email) || empty($password)) {
             return new JsonResponse(Response::HTTP_BAD_REQUEST);
-        }
+        }else {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)){ //Verificación del formato correcto del Email.
+                return new JsonResponse(Response::HTTP_BAD_REQUEST);
+            }
 
         //We verify within the database that the email is not used by another nurse
         $repeatedEmail = $entityManager->getRepository(Nurses::class)->findBy(['email' => $email]);
@@ -126,7 +129,7 @@ class NurseController extends AbstractController
     {
         $nameNurse = $requestNurse->query->get('id');
         $nurseRepository = $entityManager->getRepository(Nurses::class);
-        $nurses = $nurseRepository->findBy(['id' => $nameNurse]);
+        $nurses = $nurseRepository->find(['id' => $nameNurse]);
 
         $nurseArray = [];
         if (!empty($nurses)) {
@@ -163,6 +166,9 @@ class NurseController extends AbstractController
             return new JsonResponse(Response::HTTP_NOT_FOUND);
         }else {
             if (!empty($nurseByFirstName) || !empty($nurseByLastName) || !empty($nurseByEmail) || !empty($nurseByPassword)){ //I see that all data is passed
+                if (!filter_var($nurseByEmail, FILTER_VALIDATE_EMAIL)){
+                    return new JsonResponse(Response::HTTP_BAD_REQUEST);
+                }  
                 $nurseRepository->setFirstName($nurseByFirstName); //I change each of the data through the set.
                 $nurseRepository->setLastName($nurseByLastName);
                 $nurseRepository->setEmail($nurseByEmail);
