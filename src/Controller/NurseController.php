@@ -126,7 +126,7 @@ class NurseController extends AbstractController
     {
         $nameNurse = $peticionNurse->query->get('id');
         $nurseRepository = $entityManager->getRepository(Nurses::class);
-        $nurses = $nurseRepository->findBy(['id' => $nameNurse]);
+        $nurses = $nurseRepository->find(['id' => $nameNurse]);
 
         $nurseArray = [];
         if (!empty($nurses)) {
