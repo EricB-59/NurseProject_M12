@@ -100,12 +100,11 @@ class NurseController extends AbstractController
     }
 
     //Search a nurse by name
-    #[Route('/findName', methods: ['GET'], name: 'app_nurse_findName')]
-    public function findName(Request $requestNurse, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/findName/{first_name}', methods: ['GET'], name: 'app_nurse_findName')]
+    public function findName(string $first_name, EntityManagerInterface $entityManager): JsonResponse
     {
-        $nameNurse = $requestNurse->query->get(key: 'first_name');
         $nurseRepository = $entityManager->getRepository(Nurses::class);
-        $nurses = $nurseRepository->findBy(['first_name' => $nameNurse]);
+        $nurses = $nurseRepository->findBy(['first_name' => $first_name]);
 
         $nurseArray = [];
         if (!empty($nurses)) {
@@ -125,29 +124,26 @@ class NurseController extends AbstractController
         return new JsonResponse(['message' => 'This nurse name does not exist.'], Response::HTTP_NOT_FOUND);
     }
     
-    #[Route('/findByID', methods: ['GET'], name: 'app_nurse_findID')]
-    public function findByID(Request $requestNurse, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/findByID/{id}', methods: ['GET'], name: 'app_nurse_findID')]
+    public function findByID(int $id, EntityManagerInterface $entityManager): JsonResponse
     {
-        $nameNurse = $requestNurse->query->get('id');
         $nurseRepository = $entityManager->getRepository(Nurses::class);
-        $nurses = $nurseRepository->find(['id' => $nameNurse]);
-
-        $nurseArray = [];
-        if (!empty($nurses)) {
-            foreach ($nurses as $nurse) {
-                $nurseArray[] = [
-                    'id' => $nurse->getId(),
-                    'first_name' => $nurse->getFirstName(),
-                    'last_name' => $nurse->getLastName(),
-                    'email' => $nurse->getEmail(),
-                ];
-
-                return new JsonResponse($nurseArray, Response::HTTP_OK);
-            }
+        $nurse = $nurseRepository->find($id);
+    
+        // Si no se encuentra la enfermera, devuelve un 404
+        if (!$nurse) {
+            return new JsonResponse (Response::HTTP_NOT_FOUND);
         }
-
-        // If the nurse's name not found we return 404 error message
-        return new JsonResponse(Response::HTTP_NOT_FOUND);
+    
+        // Si se encuentra, retorna la información
+        $nurseArray = [
+            'id' => $nurse->getId(),
+            'first_name' => $nurse->getFirstName(),
+            'last_name' => $nurse->getLastName(),
+            'email' => $nurse->getEmail(),
+        ];
+    
+        return new JsonResponse($nurseArray, Response::HTTP_OK);
     }
 
 // UPDATE
