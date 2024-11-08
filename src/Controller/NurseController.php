@@ -18,7 +18,7 @@ class NurseController extends AbstractController
     #[Route('/create', methods: ['POST'], name: 'app_nurse_create')]
     public function createNurse(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        //We send the attributes of the Nurse with postMan doing the function that the front-end would do with its inputs        
+        //We send the attributes of the Nurse with postMan doing the function that the front-end would do with its inputs                
         $firstName = $request->request->get('first_name');
         $lastName = $request->request->get('last_name');
         $email = $request->request->get('email');
@@ -27,16 +27,17 @@ class NurseController extends AbstractController
 
         // We validate that all required fields are sent
         if (empty($firstName) || empty($lastName) || empty($email) || empty($password)) {
-            return new JsonResponse(Response::HTTP_BAD_REQUEST);
+            return new JsonResponse("Empty fields",Response::HTTP_BAD_REQUEST);
+        }
+
+        //We verify within the database that the email is not used by another nurse
+        $repeatedEmail = $entityManager->getRepository(Nurses::class)->findBy(['email' => $email]);
+        if ($repeatedEmail) {
+            return new JsonResponse("Repeated email",Response::HTTP_BAD_REQUEST);
         }else {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)){ //Verificación del formato correcto del Email.
                 return new JsonResponse(Response::HTTP_BAD_REQUEST);
             }
-        }
-        //We verify within the database that the email is not used by another nurse
-        $repeatedEmail = $entityManager->getRepository(Nurses::class)->findBy(['email' => $email]);
-        if ($repeatedEmail) {
-            return new JsonResponse( Response:: HTTP_BAD_REQUEST);
         }
 
         $nurse = new Nurses();
@@ -52,7 +53,7 @@ class NurseController extends AbstractController
         that your changes should be saved to the database in the next flush operation */
         $entityManager->flush();
 
-        return new JsonResponse(data: Response::HTTP_CREATED);
+        return new JsonResponse($nurse,Response::HTTP_CREATED);
     }
   
 // READ
@@ -159,7 +160,7 @@ class NurseController extends AbstractController
         //I get an object from all the data by searching for it by ID.
         $nurseRepository = $entityManager->getRepository(Nurses::class)->find(['id' => $nurseById]); 
         //El repositorio(get repository) crea un objeto u objetos de la busqueda que devuelve la base de datos, se almacenan ahí.
-        
+
         if ($nurseRepository == null) { //If the object does not exist
             return new JsonResponse(Response::HTTP_NOT_FOUND);
         }else {
@@ -174,7 +175,8 @@ class NurseController extends AbstractController
 
                 $entityManager->flush(); //I make the changes to the database.
                 
-                return new JsonResponse(Response::HTTP_OK);//Show whether there is an error or not.
+                return new JsonResponse(Response::HTTP_OK); //Show whether there is an error or not.
+
             }else {
                 return new JsonResponse(Response::HTTP_BAD_REQUEST);
             }
