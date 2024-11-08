@@ -34,6 +34,10 @@ class NurseController extends AbstractController
         $repeatedEmail = $entityManager->getRepository(Nurses::class)->findBy(['email' => $email]);
         if ($repeatedEmail) {
             return new JsonResponse("Repeated email",Response::HTTP_BAD_REQUEST);
+        }else {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)){ //Verificación del formato correcto del Email.
+                return new JsonResponse(Response::HTTP_BAD_REQUEST);
+            }
         }
 
         $nurse = new Nurses();
@@ -63,6 +67,7 @@ class NurseController extends AbstractController
         $nursesArray = [];
         foreach ($nurses as $nurse) {
             $nursesArray[] = [
+                'id' => $nurse->getId(),
                 'first_name' => $nurse->getFirstName(),
                 'last_name' => $nurse->getLastName(),
                 'email' => $nurse->getEmail(),
@@ -97,9 +102,9 @@ class NurseController extends AbstractController
 
     //Search a nurse by name
     #[Route('/findName', methods: ['GET'], name: 'app_nurse_findName')]
-    public function findName(Request $peticionNurse, EntityManagerInterface $entityManager): JsonResponse
+    public function findName(Request $requestNurse, EntityManagerInterface $entityManager): JsonResponse
     {
-        $nameNurse = $peticionNurse->query->get(key: 'first_name');
+        $nameNurse = $requestNurse->query->get(key: 'first_name');
         $nurseRepository = $entityManager->getRepository(Nurses::class);
         $nurses = $nurseRepository->findBy(['first_name' => $nameNurse]);
 
@@ -118,7 +123,7 @@ class NurseController extends AbstractController
         }
 
         // If the nurse's name not found we return 404 error message
-        return new JsonResponse(['message' => 'El enfermero con ese nombre no existe.'], Response::HTTP_NOT_FOUND);
+        return new JsonResponse(['message' => 'This nurse name does not exist.'], Response::HTTP_NOT_FOUND);
     }
     
     #[Route('/findByID', methods: ['GET'], name: 'app_nurse_findID')]
@@ -126,7 +131,7 @@ class NurseController extends AbstractController
     {
         $nameNurse = $requestNurse->query->get('id');
         $nurseRepository = $entityManager->getRepository(Nurses::class);
-        $nurses = $nurseRepository->findBy(['id' => $nameNurse]);
+        $nurses = $nurseRepository->find(['id' => $nameNurse]);
 
         $nurseArray = [];
         if (!empty($nurses)) {
@@ -149,10 +154,10 @@ class NurseController extends AbstractController
 // UPDATE
     //Modification of nurses.
     #[Route('/updateById', methods: ['PUT'], name: 'app_nurse_update')]
-    public function updateByName(Request $requestId, EntityManagerInterface $entityManager): JsonResponse //Request obtiene la información de la petición,
+    public function updateByName(Request $requestId, EntityManagerInterface $entityManager): JsonResponse //Request get the information from de request,
     {
-        $nurseById = $requestId->query->get(key: 'id'); //Obtengo el id pasado por la URL del ID (STRING).
-        $nurseByFirstName = $requestId->query->get(key: 'first_name'); //Obtengo el first_name pasado por la URL del ID (STRING).
+        $nurseById = $requestId->query->get(key: 'id'); //I get the id passed by the ID URL(STRING).
+        $nurseByFirstName = $requestId->query->get(key: 'first_name'); //I get the first_name passed by the ID URL(STRING).
         $nurseByLastName = $requestId->query->get(key: 'last_name');
         $nurseByEmail = $requestId->query->get(key: 'email');
         $nurseByPassword = $requestId->query->get(key: 'password'); 
@@ -164,6 +169,9 @@ class NurseController extends AbstractController
             return new JsonResponse(Response::HTTP_NOT_FOUND);
         }else {
             if (!empty($nurseByFirstName) || !empty($nurseByLastName) || !empty($nurseByEmail) || !empty($nurseByPassword)){ //I see that all data is passed
+                if (!filter_var($nurseByEmail, FILTER_VALIDATE_EMAIL)){
+                    return new JsonResponse(Response::HTTP_BAD_REQUEST);
+                }  
                 $nurseRepository->setFirstName($nurseByFirstName); //I change each of the data through the set.
                 $nurseRepository->setLastName($nurseByLastName);
                 $nurseRepository->setEmail($nurseByEmail);
@@ -172,6 +180,7 @@ class NurseController extends AbstractController
                 $entityManager->flush(); //I make the changes to the database.
                 
                 return new JsonResponse(Response::HTTP_OK); //Show whether there is an error or not.
+
             }else {
                 return new JsonResponse(Response::HTTP_BAD_REQUEST);
             }
