@@ -24,15 +24,19 @@ class NurseController extends AbstractController
         $email = $request->request->get('email');
         $password = $request->request->get('password');
 
-        $reg = '/^(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/';// He creado esta línea usnaod el regez para verificar contraseña
+        //verification parameters that must has the password.
+        //1. a number /^(?=.*?[0-9])
+        //2. mandatory special character (?=.*?[#?!@$%^&*-])
+        //3. length of six .{6,}
+        $reg = '/^(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/';
 
         // We validate that all required fields are sent
         if (empty($firstName) || empty($lastName) || empty($email) || empty($password)) {
             return new JsonResponse(Response::HTTP_BAD_REQUEST);
         }else {
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)){ //Verificación del formato correcto del Email.
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)){ //email format verification.
                 return new JsonResponse(Response::HTTP_BAD_REQUEST);
-            } else if (!preg_match($reg, $password)){
+            } else if (!preg_match($reg, $password)){ //regex function.
                 return new JsonResponse(Response::HTTP_BAD_REQUEST);
             }
         }
