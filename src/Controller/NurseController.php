@@ -32,12 +32,12 @@ class NurseController extends AbstractController
 
         // We validate that all required fields are sent
         if (empty($firstName) || empty($lastName) || empty($email) || empty($password)) {
-            return new JsonResponse(Response::HTTP_BAD_REQUEST);
+            return new JsonResponse("Empty fields" ,Response::HTTP_BAD_REQUEST);
         }else {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)){ //email format verification.
-                return new JsonResponse(Response::HTTP_BAD_REQUEST);
+                return new JsonResponse("Invalid email",Response::HTTP_BAD_REQUEST);
             } else if (!preg_match($reg, $password)){ //regex function.
-                return new JsonResponse(Response::HTTP_BAD_REQUEST);
+                return new JsonResponse("Password paremeters wrong",Response::HTTP_BAD_REQUEST);
             }
         }
         //We verify within the database that the email is not used by another nurse
@@ -52,14 +52,13 @@ class NurseController extends AbstractController
         $nurse->setLastName($lastName);
         $nurse->setEmail($email);
         $nurse->setPassword($password);
-
         
         $entityManager->persist($nurse); 
         /*The persist method is like a create in MySQL, when you call persist($entity), you tell Doctrine that this entity should be managed and 
         that your changes should be saved to the database in the next flush operation */
         $entityManager->flush();
-
-        return new JsonResponse(data: Response::HTTP_CREATED);
+        
+        return new JsonResponse("Created",Response::HTTP_CREATED);
     }
   
 // READ
