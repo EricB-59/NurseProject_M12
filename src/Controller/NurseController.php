@@ -18,7 +18,7 @@ class NurseController extends AbstractController
     #[Route('/create', methods: ['POST'], name: 'app_nurse_create')]
     public function createNurse(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        //We send the attributes of the Nurse with postMan doing the function that the front-end would do with its inputs        
+        //We send the attributes of the Nurse with postMan doing the function that the front-end would do with its inputs                
         $firstName = $request->request->get('first_name');
         $lastName = $request->request->get('last_name');
         $email = $request->request->get('email');
@@ -40,10 +40,15 @@ class NurseController extends AbstractController
                 return new JsonResponse("Password paremeters wrong",Response::HTTP_BAD_REQUEST);
             }
         }
+
         //We verify within the database that the email is not used by another nurse
         $repeatedEmail = $entityManager->getRepository(Nurses::class)->findBy(['email' => $email]);
         if ($repeatedEmail) {
-            return new JsonResponse( Response:: HTTP_BAD_REQUEST);
+            return new JsonResponse("Repeated email",Response::HTTP_BAD_REQUEST);
+        }else {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)){ //Verificación del formato correcto del Email.
+                return new JsonResponse(Response::HTTP_BAD_REQUEST);
+            }
         }
 
         $nurse = new Nurses();
@@ -57,7 +62,7 @@ class NurseController extends AbstractController
         /*The persist method is like a create in MySQL, when you call persist($entity), you tell Doctrine that this entity should be managed and 
         that your changes should be saved to the database in the next flush operation */
         $entityManager->flush();
-        
+
         return new JsonResponse("Created",Response::HTTP_CREATED);
     }
   
@@ -106,12 +111,11 @@ class NurseController extends AbstractController
     }
 
     //Search a nurse by name
-    #[Route('/findName', methods: ['GET'], name: 'app_nurse_findName')]
-    public function findName(Request $requestNurse, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/findName/{first_name}', methods: ['GET'], name: 'app_nurse_findName')]
+    public function findName(string $first_name, EntityManagerInterface $entityManager): JsonResponse
     {
-        $nameNurse = $requestNurse->query->get(key: 'first_name');
         $nurseRepository = $entityManager->getRepository(Nurses::class);
-        $nurses = $nurseRepository->findBy(['first_name' => $nameNurse]);
+        $nurses = $nurseRepository->findBy(['first_name' => $first_name]);
 
         $nurseArray = [];
         if (!empty($nurses)) {
@@ -131,29 +135,26 @@ class NurseController extends AbstractController
         return new JsonResponse(['message' => 'This nurse name does not exist.'], Response::HTTP_NOT_FOUND);
     }
     
-    #[Route('/findByID', methods: ['GET'], name: 'app_nurse_findID')]
-    public function findByID(Request $requestNurse, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/findByID/{id}', methods: ['GET'], name: 'app_nurse_findID')]
+    public function findByID(int $id, EntityManagerInterface $entityManager): JsonResponse
     {
-        $nameNurse = $requestNurse->query->get('id');
         $nurseRepository = $entityManager->getRepository(Nurses::class);
-        $nurses = $nurseRepository->find(['id' => $nameNurse]);
-
-        $nurseArray = [];
-        if (!empty($nurses)) {
-            foreach ($nurses as $nurse) {
-                $nurseArray[] = [
-                    'id' => $nurse->getId(),
-                    'first_name' => $nurse->getFirstName(),
-                    'last_name' => $nurse->getLastName(),
-                    'email' => $nurse->getEmail(),
-                ];
-
-                return new JsonResponse($nurseArray, Response::HTTP_OK);
-            }
+        $nurse = $nurseRepository->find($id);
+    
+        // Si no se encuentra la enfermera, devuelve un 404
+        if (!$nurse) {
+            return new JsonResponse (Response::HTTP_NOT_FOUND);
         }
-
-        // If the nurse's name not found we return 404 error message
-        return new JsonResponse(Response::HTTP_NOT_FOUND);
+    
+        // Si se encuentra, retorna la información
+        $nurseArray = [
+            'id' => $nurse->getId(),
+            'first_name' => $nurse->getFirstName(),
+            'last_name' => $nurse->getLastName(),
+            'email' => $nurse->getEmail(),
+        ];
+    
+        return new JsonResponse($nurseArray, Response::HTTP_OK);
     }
 
 // UPDATE
@@ -169,7 +170,7 @@ class NurseController extends AbstractController
         //I get an object from all the data by searching for it by ID.
         $nurseRepository = $entityManager->getRepository(Nurses::class)->find(['id' => $nurseById]); 
         //El repositorio(get repository) crea un objeto u objetos de la busqueda que devuelve la base de datos, se almacenan ahí.
-        
+
         if ($nurseRepository == null) { //If the object does not exist
             return new JsonResponse(Response::HTTP_NOT_FOUND);
         }else {
@@ -184,7 +185,8 @@ class NurseController extends AbstractController
 
                 $entityManager->flush(); //I make the changes to the database.
                 
-                return new JsonResponse(Response::HTTP_OK);//Show whether there is an error or not.
+                return new JsonResponse(Response::HTTP_OK); //Show whether there is an error or not.
+
             }else {
                 return new JsonResponse(Response::HTTP_BAD_REQUEST);
             }
