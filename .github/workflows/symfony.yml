@@ -72,6 +72,16 @@ jobs:
         run: php bin/console doctrine:database:create
         env:
           DATABASE_URL: "mysql://root:root@127.0.0.1:3306/nurses"
+
+      - name: Drop Existing Database Schema (force drop all tables)
+        run: php bin/console doctrine:schema:drop --force
+        env:
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/nurses"
+
+      - name: Sync Migration Versions
+        run: php bin/console doctrine:migrations:sync-metadata-storage --no-interaction
+        env:
+          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/nurses"
       
       - name: Run Database Migrations
         run: php bin/console doctrine:migrations:migrate --no-interaction
