@@ -17,6 +17,21 @@ permissions:
 jobs:
   symfony-tests:
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+    
     steps:
     #  To automatically get bug fixes and new Php versions for shivammathur/setup-php,
     # change this to (see https://github.com/shivammathur/setup-php#bookmark-versioning):
@@ -25,8 +40,10 @@ jobs:
       with:
         php-version: '8.2'
     - uses: actions/checkout@v4
+    
     - name: Copy .env.test.local
       run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
+    
     - name: Cache Composer packages
       id: composer-cache
       uses: actions/cache@v3
@@ -35,13 +52,23 @@ jobs:
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
+    
     - name: Install Dependencies
       run: composer install #-q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-    - name: Create Database
+    
+    - name: Wait for MySQL to be ready
       run: |
-        mkdir -p data
-        touch data/database.sqlite
+        until mysqladmin ping -h"127.0.0.1" --silent; do
+          echo "Waiting for database connection..."
+          sleep 1
+        done
+
+    - name: Run Database Migrations
+      run: php bin/console doctrine:migrations:migrate --no-interaction
+      env:
+        DATABASE_URL: "mysql://root:root@127.0.0.1:3306/test_db"
+    
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
-        DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
+        DATABASE_URL: "mysql://root:root@127.0.0.1:3306/test_db"
       run: vendor/bin/phpunit
