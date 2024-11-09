@@ -83,10 +83,10 @@ jobs:
         env:
           DATABASE_URL: "mysql://root:root@127.0.0.1:3306/nurses"
       
-      - name: Run Database Migrations
-        run: php bin/console doctrine:migrations:migrate --no-interaction
-        env:
-          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/nurses"
+      #- name: Run Database Migrations
+      #  run: php bin/console doctrine:migrations:migrate --no-interaction
+      #  env:
+      #    DATABASE_URL: "mysql://root:root@127.0.0.1:3306/nurses"
 
       # Run PHPUnit tests
       - name: Execute tests (Unit and Feature tests) via PHPUnit
