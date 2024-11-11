@@ -55,6 +55,18 @@ jobs:
       - name: Install Dependencies
         run: composer install --no-progress --prefer-dist
 
+      - uses: mirromutth/mysql-action@v1.1
+        with:
+          host port: 3306 # Optional, default value is 3306. The port of host
+          container port: 3306 # Optional, default value is 3306. The port of container
+          character set server: 'utf8' # Optional, default value is 'utf8mb4'. The '--character-set-server' option for mysqld
+          collation server: 'utf8_general_ci' # Optional, default value is 'utf8mb4_general_ci'. The '--collation-server' option for mysqld
+          mysql version: '8.0' # Optional, default value is "latest". The version of the MySQL
+          mysql database: 'test' # Optional, default value is "test". The specified database which will be create
+          mysql root password: root # Required if "mysql user" is empty, default is empty. The root superuser password
+          mysql user: 'dev' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
+          mysql password: root # Required if "mysql user" exists. The password for the "mysql user"
+      
       # Wait for MySQL to be ready
       - name: Wait for MySQL to be ready
         run: |
@@ -66,25 +78,25 @@ jobs:
       - name: Drop Database if Exists
         run: php bin/console doctrine:database:drop --force --if-exists
         env:
-          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/nurses"
+          DATABASE_URL: "mysql://dev:root@127.0.0.1:3306/test"
       
       - name: Create Database
         run: php bin/console doctrine:database:create
         env:
-          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/nurses"
+          DATABASE_URL: "mysql://dev:root@127.0.0.1:3306/test"
 
       - name: Drop Existing Database Schema (force drop all tables)
         run: php bin/console doctrine:schema:drop --force
         env:
-          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/nurses"
+          DATABASE_URL: "mysql://dev:root@127.0.0.1:3306/test"
       
       - name: Run Database Migrations
         run: php bin/console doctrine:migrations:migrate
         env:
-          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/nurses"
+          DATABASE_URL: "mysql://dev:root@127.0.0.1:3306/test"
 
       # Run PHPUnit tests
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         env:
-          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/nurses"
+          DATABASE_URL: "mysql://dev:root@127.0.0.1:3306/test"
         run: vendor/bin/phpunit
