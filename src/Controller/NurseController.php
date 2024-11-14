@@ -159,16 +159,15 @@ class NurseController extends AbstractController
 
     // * UPDATE
     // Modification of nurses.
-    #[Route('/updateById', methods: ['PUT'], name: 'app_nurse_update')]
-    public function updateByName(Request $requestId, EntityManagerInterface $entityManager): JsonResponse // Request get the information from de request,
+    #[Route('/updateById/{id}', methods: ['PUT'], name: 'app_nurse_update')]
+    public function updateByName(int $id, Request $requestId, EntityManagerInterface $entityManager): JsonResponse // Request get the information from de request,
     {
-        $nurseById = $requestId->query->get(key: 'id'); // I get the id passed by the ID URL(STRING).
         $nurseByFirstName = $requestId->query->get(key: 'first_name'); // I get the first_name passed by the ID URL(STRING).
         $nurseByLastName = $requestId->query->get(key: 'last_name');
         $nurseByEmail = $requestId->query->get(key: 'email');
         $nurseByPassword = $requestId->query->get(key: 'password');
         // I get an object from all the data by searching for it by ID.
-        $nurseRepository = $entityManager->getRepository(Nurses::class)->find(['id' => $nurseById]);
+        $nurseRepository = $entityManager->getRepository(Nurses::class)->find(['id' => $id]);
         // El repositorio(get repository) crea un objeto u objetos de la busqueda que devuelve la base de datos, se almacenan ahí.
 
         if (null == $nurseRepository) { // If the object does not exist
@@ -194,15 +193,12 @@ class NurseController extends AbstractController
 
     // * DELETE
     // Delete by ID
-    #[Route('/deleteById', name: 'app_nurse_deleteById', methods: ['DELETE'])]
-    public function deleteById(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/deleteById/{id}', name: 'app_nurse_deleteById', methods: ['DELETE'])]
+    public function deleteById(int $id, EntityManagerInterface $entityManager): JsonResponse
     {
-        // Front-End Input
-        $idNurse = $request->query->get('id_nurse');
-
         // Acces to database
         $nurseRepository = $entityManager->getRepository(Nurses::class);
-        $nurses = $nurseRepository->findOneBy(['id' => $idNurse]);
+        $nurses = $nurseRepository->findOneBy(['id' => $id]);
 
         if (null != $nurses) {
             $entityManager->remove($nurses);
