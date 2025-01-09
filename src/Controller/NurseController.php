@@ -48,8 +48,8 @@ class NurseController extends AbstractController
         } else {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { // Verificación del formato correcto del Email.
                 return new JsonResponse(Response::HTTP_BAD_REQUEST);
-            } 
-        } 
+            }
+        }
 
         $nurse = new Nurses();
         // We create the nurse and control it as a nurse object that will save all the data
