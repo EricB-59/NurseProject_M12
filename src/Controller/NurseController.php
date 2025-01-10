@@ -15,7 +15,7 @@ class NurseController extends AbstractController
 {
     // * CREATE
     // Create nurse with the next attributes: first_name, last_name, email and password
-    #[Route('/create', methods: ['POST'], name: 'app_nurse_create')]
+    #[Route('/create', name: 'app_nurse_create', methods: ['POST'])]
     public function createNurse(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         // We send the attributes of the Nurse with postMan doing the function that the front-end would do with its inputs
