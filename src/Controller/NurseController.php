@@ -95,11 +95,11 @@ class NurseController extends AbstractController
     #[Route('/login', methods: ['POST'], name: 'app_nurse_login')]
     public function nurseLogin(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        $firstName = $request->request->get('first_name');
+        $email = $request->request->get('email');
         $password = $request->request->get('password');
 
         $nurses_repo = $entityManager->getRepository(Nurses::class);
-        $nurses = $nurses_repo->findOneBy(['first_name' => $firstName]);
+        $nurses = $nurses_repo->findOneBy(['email' => $email]);
 
         if (null == $nurses) {
             return $this->json(false, Response::HTTP_NOT_FOUND);
