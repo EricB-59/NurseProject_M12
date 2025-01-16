@@ -21,10 +21,11 @@ class NurseController extends AbstractController
     public function createNurse(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         // We send the attributes of the Nurse with postMan doing the function that the front-end would do with its inputs
-        $firstName = $request->request->get('first_name');
-        $lastName = $request->request->get('last_name');
-        $email = $request->request->get('email');
-        $password = $request->request->get('password');
+        $data = json_decode($request->getContent(), true);
+        $firstName = $data['first_name'];
+        $lastName = $data['last_name'];
+        $email = $data['email'];
+        $password = $data['password'];
 
         // ! verification parameters that must has the password.
         // 1. a number /^(?=.*?[0-9])
