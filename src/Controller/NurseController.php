@@ -164,12 +164,14 @@ class NurseController extends AbstractController
     // * UPDATE
     // Modification of nurses.
     #[Route('/updateById/{id}', methods: ['PUT'], name: 'app_nurse_update')]
-    public function updateById(int $id, Request $requestId, EntityManagerInterface $entityManager): JsonResponse // Request get the information from de request,
+    public function updateById(int $id, Request $request, EntityManagerInterface $entityManager): JsonResponse // Request get the information from de request,
     {
-        $nurseByFirstName = $requestId->query->get(key: 'first_name'); // I get the first_name passed by the ID URL(STRING).
-        $nurseByLastName = $requestId->query->get(key: 'last_name');
-        $nurseByEmail = $requestId->query->get(key: 'email');
-        $nurseByPassword = $requestId->query->get(key: 'password');
+        $data = json_decode($request->getContent(), true);
+
+        $nurseByFirstName = $data['first_name'];  // I get the first_name passed by the ID URL(STRING).
+        $nurseByLastName = $data['last_name'];
+        $nurseByEmail = $data['email'];
+        $nurseByPassword = $data['password'];
         // I get an object from all the data by searching for it by ID.
         $nurseRepository = $entityManager->getRepository(Nurses::class)->find(['id' => $id]);
         // El repositorio(get repository) crea un objeto u objetos de la busqueda que devuelve la base de datos, se almacenan ahí.
