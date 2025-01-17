@@ -164,7 +164,7 @@ class NurseController extends AbstractController
     // * UPDATE
     // Modification of nurses.
     #[Route('/updateById/{id}', methods: ['PUT'], name: 'app_nurse_update')]
-    public function updateByName(int $id, Request $requestId, EntityManagerInterface $entityManager): JsonResponse // Request get the information from de request,
+    public function updateById(int $id, Request $requestId, EntityManagerInterface $entityManager): JsonResponse // Request get the information from de request,
     {
         $nurseByFirstName = $requestId->query->get(key: 'first_name'); // I get the first_name passed by the ID URL(STRING).
         $nurseByLastName = $requestId->query->get(key: 'last_name');
