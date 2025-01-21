@@ -105,13 +105,12 @@ class NurseController extends AbstractController
 
         if (null == $nurses) {
             return $this->json(false, Response::HTTP_NOT_FOUND);
-        } else {
-            if ($nurses->getPassword() === $password) {
-                return $this->json(true, Response::HTTP_OK);
-            } else {
-                return $this->json(false, Response::HTTP_NOT_FOUND);
-            }
+        } 
+        if (!$nurses->getPassword() === $password) {
+            return $this->json(false, Response::HTTP_NOT_FOUND);
         }
+
+        return $this->json($nurses->getId(), Response::HTTP_OK);
     }
 
     // Search a nurse by name
