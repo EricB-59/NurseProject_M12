@@ -129,9 +129,8 @@ class NurseController extends AbstractController
                     'last_name' => $nurse->getLastName(),
                     'email' => $nurse->getEmail(),
                 ];
-
-                return new JsonResponse($nurseArray, Response::HTTP_OK);
             }
+            return new JsonResponse($nurseArray, Response::HTTP_OK);
         }
 
         // If the nurse's name not found we return 404 error message
