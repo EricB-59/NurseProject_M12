@@ -25,6 +25,7 @@ class NurseController extends AbstractController
         $firstName = $data['first_name'];
         $lastName = $data['last_name'];
         $email = $data['email'];
+        $profileImg = $data['profileImg'];
         $password = $data['password'];
 
         // ! verification parameters that must has the password.
@@ -34,7 +35,7 @@ class NurseController extends AbstractController
         $reg = '/^(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/';
 
         // We validate that all required fields are sent
-        if (empty($firstName) || empty($lastName) || empty($email) || empty($password)) {
+        if (empty($firstName) || empty($lastName) || empty($email) || empty($profileImg) || empty($password)) {
             return new JsonResponse('Empty fields', Response::HTTP_BAD_REQUEST);
         } else {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { // email format verification.
@@ -59,6 +60,7 @@ class NurseController extends AbstractController
         $nurse->setFirstName(first_name: $firstName);
         $nurse->setLastName($lastName);
         $nurse->setEmail($email);
+        $nurse->setProfileImg($profileImg);
         $nurse->setPassword($password);
 
         $entityManager->persist($nurse);
@@ -84,6 +86,7 @@ class NurseController extends AbstractController
                 'first_name' => $nurse->getFirstName(),
                 'last_name' => $nurse->getLastName(),
                 'email' => $nurse->getEmail(),
+                'profileImg' => $nurse->getProfileImg(),
                 'password' => $nurse->getPassword(),
             ];
         }
@@ -154,6 +157,7 @@ class NurseController extends AbstractController
             'first_name' => $nurse->getFirstName(),
             'last_name' => $nurse->getLastName(),
             'email' => $nurse->getEmail(),
+            'profileImg' => $nurse->getProfileImg()
         ];
 
         return new JsonResponse($nurseArray, Response::HTTP_OK);
@@ -169,6 +173,7 @@ class NurseController extends AbstractController
         $nurseByFirstName = $data['first_name'];  // I get the first_name passed by the ID URL(STRING).
         $nurseByLastName = $data['last_name'];
         $nurseByEmail = $data['email'];
+        $nurseByProfileImg = $data['profileImg'];
         $nurseByPassword = $data['password'];
         // I get an object from all the data by searching for it by ID.
         $nurseRepository = $entityManager->getRepository(Nurses::class)->find(['id' => $id]);
@@ -177,13 +182,14 @@ class NurseController extends AbstractController
         if (null == $nurseRepository) { // If the object does not exist
             return new JsonResponse('Nurse does not exist', Response::HTTP_NOT_FOUND);
         } else {
-            if (!empty($nurseByFirstName) || !empty($nurseByLastName) || !empty($nurseByEmail) || !empty($nurseByPassword)) { // I see that all data is passed
+            if (!empty($nurseByFirstName) || !empty($nurseByLastName) || !empty($nurseByEmail) || !empty($nurseByProfileImg) || !empty($nurseByPassword)) { // I see that all data is passed
                 if (!filter_var($nurseByEmail, FILTER_VALIDATE_EMAIL)) {
                     return new JsonResponse('Email invalid', Response::HTTP_BAD_REQUEST);
                 }
                 $nurseRepository->setFirstName($nurseByFirstName); // I change each of the data through the set.
                 $nurseRepository->setLastName($nurseByLastName);
                 $nurseRepository->setEmail($nurseByEmail);
+                $nurseRepository->setProfileImg($nurseByProfileImg);
                 $nurseRepository->setPassword($nurseByPassword);
 
                 $entityManager->flush(); // I make the changes to the database.

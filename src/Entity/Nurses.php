@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\NursesRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: NursesRepository::class)]
@@ -24,6 +25,9 @@ class Nurses
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $profileImg = null;
 
     public function getId(): ?int
     {
@@ -74,6 +78,18 @@ class Nurses
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getProfileImg(): ?string
+    {
+        return $this->profileImg;
+    }
+
+    public function setProfileImg(string $profileImg): static
+    {
+        $this->profileImg = $profileImg;
 
         return $this;
     }
